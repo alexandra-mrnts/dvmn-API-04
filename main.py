@@ -12,7 +12,7 @@ def filetype(url):
     return extension
 
 
-def load_picture(url, file_name):
+def load_image(url, file_name):
     response = requests.get(url)
     response.raise_for_status()
     Path(file_name).parent.mkdir(exist_ok=True)
@@ -33,7 +33,7 @@ def fetch_spacex_launch(launch_id=None):
     images = response_body['links']['flickr']['original']
     for image_number, image in enumerate(images):
         file_name = f'{file_dir}/spacex_{str(image_number + 1)}.jpg'
-        load_picture(url=image, file_name=file_name)
+        load_image(url=image, file_name=file_name)
 
 
 def fetch_NASA_apod():
@@ -53,7 +53,7 @@ def fetch_NASA_apod():
         if extention.lower() not in supported_extentions:
             continue
         file_name = f'{file_dir}/nasa_apod_{str(item_number + 1)}{extention}'
-        load_picture(url=image, file_name=file_name)
+        load_image(url=image, file_name=file_name)
 
 
 def fetch_NASA_EPIC():
@@ -72,7 +72,7 @@ def fetch_NASA_EPIC():
         image_date = image_date.strftime('%Y/%m/%d')
         image_url = f'https://api.nasa.gov/EPIC/archive/natural/{image_date}/png/{image_name}.png?api_key={api_key}'
         file_name = file_dir + '/EPIC_' + str(item_number + 1) + '.png'
-        load_picture(url=image_url, file_name=file_name)
+        load_image(url=image_url, file_name=file_name)
         if item_number >= (max_pics_number - 1):
             break
 
