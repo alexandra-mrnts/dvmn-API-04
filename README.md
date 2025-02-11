@@ -17,9 +17,10 @@ NASA_API_KEY = 'sdVN2WyjQycGe7WIdxDHr68hQFCKHrhl1bcbfMat'
 ```
 You can generate your API key here: https://api.nasa.gov/
 
-Telegram chat ID should be added to the .env file.
+Telegram chat ID and access token should be added to the .env file.
 ```
 CHAT_ID = '@mychat'
+TG_TOKEN = '7219856276:AAGKGrSZwgpZf74JGEIBlAjiAosaVjBf4Tw'
 ```
 
 ### How to use
@@ -48,8 +49,21 @@ Number of images can be set in .env file:
 NASA_EPIC_PICS_NUMBER = 5
 ```  
 \
-All images will be stored in 'images' subfolder.  
+All images will be stored in 'images' subfolder.    
+\
+Posting an image to a Telegram channel:
+```
+publish_image.py file_name
+```  
 
+Posting all images from 'images' subfolder to a Telegram channel:
+```
+publish_all_images.py [posting_frequency]
+``` 
+Set default posting frequency in hours in a .env file.
+```
+POSTING_FREQUENCY = 24
+```  
 
 ### Project Goals
 ___

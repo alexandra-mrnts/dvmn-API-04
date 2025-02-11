@@ -1,23 +1,9 @@
 import os
 import argparse
-import telegram
 import time
 import random
 from dotenv import load_dotenv
-
-
-def post_image(file_name):
-    file_size = os.path.getsize(file_name)
-    if file_size > 20 * 10 ** 6:
-        return
-
-    token = os.environ['TG_TOKEN']
-    chat_id = os.environ['CHAT_ID']
-    bot = telegram.Bot(token=token)
-    try:
-        bot.send_photo(chat_id=chat_id, photo=open(file_name, 'rb'))
-    except Exception:
-        return
+from post_image_tg import post_image
 
 
 def main():
@@ -30,19 +16,18 @@ def main():
     if args.posting_frequency:
         posting_frequency = args.posting_frequency
     else:
-        posting_frequency = os.environ['POSTING_FREQUENCY']
+        posting_frequency = int(os.environ['POSTING_FREQUENCY'])
 
-    # TODO удалить
-    posting_frequency = 2 / 60 / 60
-    
     file_names = []
     for root, _, files in os.walk(images_dir):
         for file in files:
             file_names.append(os.path.join(root, file))
     
+    chat_id = os.environ['CHAT_ID']
+    token = os.environ['TG_TOKEN']
     while True:
         for file_name in file_names:
-            post_image(file_name)
+            post_image(file_name=file_name, chat_id=chat_id, token=token)
             time.sleep(posting_frequency * 60 * 60)
         random.shuffle(file_names)
 
