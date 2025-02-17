@@ -19,51 +19,53 @@ You can generate your API key here: https://api.nasa.gov/
 
 Telegram chat ID and access token should be added to the .env file.
 ```
-CHAT_ID = '@mychat'
+TG_CHAT_ID = '@mychat'
 TG_TOKEN = '7219856276:AAGKGrSZwgpZf74JGEIBlAjiAosaVjBf4Tw'
 ```
 
 ### How to use
 ___
-Upoading SpaceX launches images:
+To upload images from SpaceX launches use the following command:
 ```
-fetch_spacex_images.py [launch_id]
+fetch_spacex_images.py [-l launch_id] [-d directory]
 ```
-If launch id is not specified images from the latest launch will be uploaded.  
+* **launch_id** (optional): If not specified, images from the latest launch will be uploaded
+* **directory** (optional): Specifies the directory where images will be stored. If not specified, SPACEX_STORAGE_DIR environment variable will be used. If the environment variable is not set, the default subfolder 'images' will be used.
+
+
 \
-Uploading NASA images of a day:
+To upload NASA images of a day use the following command:
 ```
-fetch_NASA_apod.py
+fetch_NASA_apod.py [-n pics_number] [-d directory]
 ```
-Number of images can be set in .env file:
-```
-NASA_APOD_PICS_NUMBER = 5
-```  
+* **pics_number** (optional): Number of images to be loaded. If not specified, NASA_APOD_PICS_NUMBER environment variable will be used. If the environment variable is not set, the default number of 5 images will be loaded.
+* **directory** (optional): Specifies the directory where images will be stored. If not specified, NASA_APOD_STORAGE_DIR environment variable will be used. If the environment variable is not set, the default subfolder 'images' will be used.
+  
+
 \
-Uploading NASA Earth Polychromatic Imaging Camera (EPIC) images:
+To upload NASA Earth Polychromatic Imaging Camera (EPIC) images use the following command:
 ```
-fetch_NASA_EPIC.py
+fetch_NASA_EPIC.py [-n pics_number] [-d directory]
 ```
-Number of images can be set in .env file:
-```
-NASA_EPIC_PICS_NUMBER = 5
-```  
+* **pics_number** (optional): Maximum number of images to be loaded. If not specified, NASA_EPIC_PICS_NUMBER environment variable will be used. If the environment variable is not set, the default number of maximum 5 images will be loaded.
+* **directory** (optional): Specifies the directory where images will be stored. If not specified, NASA_EPIC_STORAGE_DIR environment variable will be used. If the environment variable is not set, the default subfolder 'images' will be used.
+
+
 \
-All images will be stored in 'images' subfolder.    
-\
-Posting an image to a Telegram channel:
+To post an image to a Telegram channel use the following command:
 ```
 publish_image.py file_name
 ```  
 
-Posting all images from 'images' subfolder to a Telegram channel:
+\
+To post all images from a directory to a Telegram channel:
 ```
-publish_all_images.py [posting_frequency]
+publish_all_images.py [-f frequency] [-d directory]
 ``` 
-Set default posting frequency in hours in a .env file.
-```
-POSTING_FREQUENCY = 24
-```  
+* **frequency** (optional): Sets the posting frequency in hours. The script will post one image at the specified interval. After all images are posted, it will countinue with the same reshuffled images.
+If not specified, TG_POSTING_FREQUENCY environment variable will be used. If the environment variable is not set, the default posting interval is 4 hours.
+* **directory** (optional): Specifies the directory containing the images to be posted. If not specified, TG_IMAGE_SOURCE_DIR environment variable will be used. If the environment variable is not set, the default directory is 'images' subfolder.
+
 
 ### Project Goals
 ___

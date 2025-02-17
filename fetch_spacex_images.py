@@ -1,43 +1,50 @@
 import requests
-import argparse
-from dotenv import load_dotenv
+import configargparse
+from pathlib import Path
 from requests.exceptions import HTTPError
+from dotenv import load_dotenv
 from load_web_image import load_image
 
 
-FILE_DIR = './images'
+DEFAULT_STORAGE_DIR = 'images'
 
 
-def fetch_spacex_launch_images(launch_id=None):
+def fetch_spacex_launch_images(storage_dir, launch_id):
     url_template = 'https://api.spacexdata.com/v5/launches/'
-    if launch_id:
-        url = f'{url_template}{launch_id}'
-    else:
-        url = f'{url_template}latest'
-
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-    except HTTPError as err:
-        if response.status_code == 404:
-            print('Ошибка в номере запуска')
-        else:
-            print(f'Возникла ошибка: {err}')
-        return
-
+    url = f'{url_template}{launch_id}'
+    response = requests.get(url)
+    response.raise_for_status()
     response_body = response.json()
     images = response_body['links']['flickr']['original']
-    for image_number, image in enumerate(images):
-        file_name = f'{FILE_DIR}/spacex_{str(image_number + 1)}.jpg'
+    for image_number, image in enumerate(images, start=1):
+        file_name = storage_dir.joinpath(f'spacex_{image_number}.jpg')
         load_image(url=image, file_name=file_name)
 
 
 def main():
     load_dotenv()
-    parser = argparse.ArgumentParser()
-    parser.add_argument('launch_id', nargs='?')
+
+    parser = configargparse.ArgParser()
+    parser.add_argument('-l',
+                        '--launch_id',
+                        default='latest')
+    parser.add_argument('-d',
+                        '--directory',
+                        env_var='SPACEX_STORAGE_DIR',
+                        default=DEFAULT_STORAGE_DIR)
     args = parser.parse_args()
-    fetch_spacex_launch_images(args.launch_id)
+
+    storage_dir = Path(args.directory).resolve()
+    launch_id = args.launch_id
+
+    try:
+        fetch_spacex_launch_images(storage_dir=storage_dir,
+                                   launch_id=launch_id)
+    except HTTPError as err:
+        if err.response.status_code == 404:
+            print('Ошибка в номере запуска')
+        else:
+            print(f'Возникла ошибка: {err}')
 
 
 if __name__ == '__main__':
