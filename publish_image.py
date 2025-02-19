@@ -1,7 +1,7 @@
 import os
 import argparse
 from pathlib import Path
-from telegram.error import TelegramError
+from telegram.error import TelegramError, Unauthorized
 from dotenv import load_dotenv
 from post_image_tg import post_image
 
@@ -9,20 +9,22 @@ from post_image_tg import post_image
 def main():
     load_dotenv()
     parser = argparse.ArgumentParser()
-    parser.add_argument('file_name')
+    parser.add_argument('filename')
     args = parser.parse_args()
     
-    file_name = Path(args.file_name)
-    if not file_name.is_file():
+    filepath = Path(args.filename)
+    if not filepath.is_file():
         print('Неверное имя файла')
         return
 
     chat_id = os.environ['TG_CHAT_ID']
     token = os.environ['TG_TOKEN']
     try:
-        post_image(file_name=file_name, chat_id=chat_id, token=token)
+        post_image(filepath=filepath, chat_id=chat_id, token=token)
+    except Unauthorized:
+        print('Ошибка. Неверный токен.')
     except TelegramError as err:
-        print(f'Не удалось опубликовать картинку {file_name}. Ошибка: {err.message}')
+        print(f'Не удалось опубликовать картинку {filepath}. Ошибка: {err.message}')
     
 
 if __name__ == '__main__':

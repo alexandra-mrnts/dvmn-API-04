@@ -10,10 +10,10 @@ from load_web_image import load_image
 
 SUPPORTED_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.gif')
 DEFAULT_STORAGE_DIR = 'images'
-DEFAULT_PICS_NUMBER = 2
+DEFAULT_PICS_NUMBER = 3
 
 
-def file_type(url):
+def get_filetype(url):
     path = Path(urlsplit(url).path)
     return path.suffix
 
@@ -27,11 +27,11 @@ def fetch_NASA_apod_images(pics_number, storage_dir, api_key):
 
     for image_number, image in enumerate(response_body, start=1):
         image_url = image['url']
-        extension = file_type(image_url)
+        extension = get_filetype(image_url)
         if extension.lower() not in SUPPORTED_EXTENSIONS:
             continue
-        file_name = storage_dir.joinpath(f'nasa_apod_{image_number}{extension}')
-        load_image(url=image_url, file_name=file_name)
+        filepath = storage_dir.joinpath(f'nasa_apod_{image_number}{extension}')
+        load_image(url=image_url, filepath=filepath)
 
 
 def main():
@@ -43,12 +43,13 @@ def main():
                         default=DEFAULT_STORAGE_DIR)
     parser.add_argument('-n',
                         '--pics_number',
+                        type=int,
                         env_var='NASA_APOD_PICS_NUMBER',
                         default=DEFAULT_PICS_NUMBER)
     args = parser.parse_args()
     
     storage_dir = Path(args.directory).resolve()
-    pics_number = int(args.pics_number)
+    pics_number = args.pics_number
     api_key = os.getenv('NASA_API_KEY')
     try:
         fetch_NASA_apod_images(pics_number=pics_number,

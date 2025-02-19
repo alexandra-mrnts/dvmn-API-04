@@ -2,9 +2,17 @@ import os
 import telegram
 
 
-def post_image(file_name, chat_id, token):
-    file_size = os.path.getsize(file_name)
-    if file_size > 20 * 10 ** 6:
+TG_FILE_MAX_SIZE = 20
+
+
+def is_file_size_ok(filepath, max_size):
+    file_size = os.path.getsize(filepath)
+    return file_size <= max_size * 10 ** 6
+
+
+def post_image(filepath, chat_id, token):
+    if not is_file_size_ok(filepath, TG_FILE_MAX_SIZE):
         return
     bot = telegram.Bot(token=token)
-    bot.send_photo(chat_id=chat_id, photo=open(file_name, 'rb'))
+    with open(filepath, 'rb') as file:
+        bot.send_photo(chat_id=chat_id, photo=file)

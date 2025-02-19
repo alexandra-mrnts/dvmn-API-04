@@ -17,8 +17,8 @@ def fetch_spacex_launch_images(storage_dir, launch_id):
     response_body = response.json()
     images = response_body['links']['flickr']['original']
     for image_number, image in enumerate(images, start=1):
-        file_name = storage_dir.joinpath(f'spacex_{image_number}.jpg')
-        load_image(url=image, file_name=file_name)
+        filepath = storage_dir.joinpath(f'spacex_{image_number}.jpg')
+        load_image(url=image, filepath=filepath)
 
 
 def main():
