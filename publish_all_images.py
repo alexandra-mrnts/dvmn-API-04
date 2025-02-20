@@ -5,7 +5,7 @@ import random
 from pathlib import Path
 from telegram.error import TelegramError, Unauthorized
 from dotenv import load_dotenv
-from post_image_tg import post_image
+from post_image_tg import post_image, is_file_size_ok, TG_FILE_MAX_SIZE
 
 
 DEFAULT_IMAGE_DIR = 'images'
@@ -37,10 +37,14 @@ def main():
 
     source_dir = Path(args.directory).resolve()
     filepaths = get_filepaths_from_dir(source_dir)
+    for filepath in filepaths:
+        if not is_file_size_ok(filepath, TG_FILE_MAX_SIZE):
+            filepaths.remove(filepath)
+            print(f'Картинка {filepath} не может быть опубликована. Размер не должен превышать 20 Мб.')
+    
     posting_frequency = args.frequency
     chat_id = os.environ['TG_CHAT_ID']
     token = os.environ['TG_TOKEN']
-    
     err_count = 0
     while True:
         for filepath in filepaths:
@@ -53,7 +57,7 @@ def main():
                 err_count += 1
                 print(f'Не удалось опубликовать картинку {filepath}. Ошибка: {err.message}')
                 if err_count >= 5:
-                    print('Следующая попытка публикации - через 5 минут.')
+                    print('Следующая попытка публикации через 5 минут.')
                     time.sleep(300)
                 continue
             err_count = 0
